@@ -33,10 +33,16 @@ const evostreet = new Layout(
         "(folder, package) and branching streets show contained subsystems."
 );
 
-export { district, evostreet };
+const islands = new Layout(
+    "reflexionislands",
+    "Reflexion Islands",
+    "Visualises code modules in islands. Each island will contain an Evostreet view."
+);
+
+export { district, evostreet, islands };
 
 export class Layouts {
-    public static availableLayouts: Layout[] = [evostreet, district];
+    public static availableLayouts: Layout[] = [evostreet, district, islands];
 
     public static getLayoutById(layoutId: string): Layout | undefined {
         if (layoutId !== undefined) {
