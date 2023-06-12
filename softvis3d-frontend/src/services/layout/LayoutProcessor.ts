@@ -37,6 +37,7 @@ import Softvis3dModel from "./Softvis3dModel";
 
 const illustratorEvostreet = CodeCityVis.illustrators.evostreet;
 const illustratorDistrict = CodeCityVis.illustrators.district;
+const illustratorIsland = CodeCityVis.illustrators.island;
 const attributeHelper = CodeCityVis.helper.attributes;
 
 // type VersionInterface = CodeCityVis.components.version;
@@ -84,8 +85,10 @@ class LayoutProcessor {
             // Step 2: Prepare the layout
             if (this._options.layout === "evostreet") {
                 this.setLayoutEvostreet();
-            } else {
+            } else if (this._options.layout === "district") {
                 this.setLayoutDistrict();
+            } else {
+                this.setLayoutIsland();
             }
 
             // Step 3: Create the Layout
@@ -114,6 +117,23 @@ class LayoutProcessor {
             metricFootprint: { min: Infinity, max: 0 },
             metricColor: { min: Infinity, max: 0 },
         };
+    }
+
+    private setLayoutIsland() {
+        this._illustrator = illustratorIsland;
+
+        this._options.layoutOptions = this._mergeDeep(this._options.layoutOptions, {
+            "layout.tower": false,
+            "house.margin": 8,
+            "spacer.margin": 25,
+            "spacer.padding": 20,
+        });
+
+        this._rules = [];
+        this._rules.push(this._RuleBuildingHeight());
+        this._rules.push(this._RuleBuildingBase());
+        this._rules.push(this._getBuildingColorRule());
+        this._rules.push(this._RulePackageColorGrey());
     }
 
     private setLayoutEvostreet() {
