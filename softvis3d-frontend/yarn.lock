@@ -2153,10 +2153,8 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codecity-visualizer@^0.4.6:
+"codecity-visualizer@file:../../codecity-visualizer":
   version "0.4.6"
-  resolved "https://registry.yarnpkg.com/codecity-visualizer/-/codecity-visualizer-0.4.6.tgz#01b43031f18d79b287fcd18085130ff26d896447"
-  integrity sha1-AbQwMfGNebKH/NGAhRMP8m2JZEc=
 
 collection-visit@^1.0.0:
   version "1.0.0"
