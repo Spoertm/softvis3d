@@ -54,7 +54,7 @@
     "@types/three": "^0.127.1",
     "axios": "^0.21.1",
     "class-transformer": "^0.4.0",
-    "codecity-visualizer": "^0.4.6",
+    "codecity-visualizer": "file:../../codecity-visualizer",
     "inversify": "^4.1.1",
     "inversify-inject-decorators": "^3.0.1",
     "mobx": "^5.15.7",
