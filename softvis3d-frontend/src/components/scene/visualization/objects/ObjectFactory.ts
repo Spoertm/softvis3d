@@ -31,11 +31,11 @@ export class ObjectFactory {
             result.push(this._getShape(shape));
         }
 
-        const embedHelperPos = shapes.find((shape) => shape.key.includes("EmbedHelper.cs")) as SoftVis3dShape;
-        const ddstatsPos = shapes.find((shape) => shape.key.includes("site.css")) as SoftVis3dShape;
+        const originHouse = shapes.find((shape) => shape.key.includes("EmbedHelper.cs")) as SoftVis3dShape;
+        const targetHouse = shapes.find((shape) => shape.key.includes("site.css")) as SoftVis3dShape;
 
-        const vec = new Vector3(embedHelperPos.position._x, embedHelperPos.position._z, embedHelperPos.position._y);
-        const vec2 = new Vector3(ddstatsPos.position._x, ddstatsPos.position._z, ddstatsPos.position._y);
+        const vec = new Vector3(originHouse.position._x, originHouse.position._z, originHouse.position._y);
+        const vec2 = new Vector3(targetHouse.position._x, targetHouse.position._z, targetHouse.position._y);
 
         console.log("vec", vec, "\nvec2", vec2);
 
