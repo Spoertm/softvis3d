@@ -19,7 +19,7 @@
 ///
 
 import { injectable } from "inversify";
-import { MeshLambertMaterial, Scene } from "three";
+import { Scene } from "three";
 import { lazyInject } from "../../../../inversify.config";
 import SceneStore from "../../../../stores/SceneStore";
 import { SoftVis3dMesh } from "../../domain/SoftVis3dMesh";
@@ -54,7 +54,7 @@ export class Wrangler {
 
         // update colors
         for (let index = 0; index < resultObjects.length; index++) {
-            this.objectsInView[index].material.color = resultObjects[index].material.color;
+            this.objectsInView[index].color = resultObjects[index].color;
         }
 
         // update selected object
@@ -70,7 +70,7 @@ export class Wrangler {
         // reset former selected objects
 
         for (const previousSelection of this.sceneStore.selectedTreeObjects) {
-            previousSelection.object.material.color.setHex(previousSelection.color);
+            previousSelection.object.color = previousSelection.color;
         }
 
         this.sceneStore.selectedTreeObjects = [];
@@ -78,16 +78,14 @@ export class Wrangler {
         if (objectSoftVis3dId !== null) {
             for (const obj of this.objectsInView) {
                 if (objectSoftVis3dId === obj.getSoftVis3dId()) {
-                    const selectedObjectMaterial: MeshLambertMaterial = obj.material;
-
                     const selectedObjectInformation = {
                         object: obj,
-                        color: selectedObjectMaterial.color.getHex(),
+                        color: obj.color,
                     };
 
                     this.sceneStore.selectedTreeObjects.push(selectedObjectInformation);
 
-                    selectedObjectMaterial.color.setHex(0xffc519);
+                    obj.color = 0xffc519;
                 }
             }
         }

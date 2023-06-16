@@ -18,7 +18,7 @@
 /// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
 ///
 
-import { BufferGeometry, Mesh, MeshLambertMaterial } from "three";
+import { BufferGeometry, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial } from "three";
 
 export class SoftVis3dMesh extends Mesh {
     /**
@@ -27,18 +27,46 @@ export class SoftVis3dMesh extends Mesh {
      * package private in Mesh, public here.
      * Override to provide MeshLambertMaterial instead of Material
      */
-    public material: MeshLambertMaterial;
 
     private readonly softVis3dId: string;
 
-    constructor(softVis3dId: string, geometry: BufferGeometry, material: MeshLambertMaterial) {
+    constructor(softVis3dId: string, geometry: BufferGeometry, material: Material) {
         super(geometry, material);
 
-        this.material = material;
         this.softVis3dId = softVis3dId;
     }
 
     public getSoftVis3dId(): string {
         return this.softVis3dId;
+    }
+
+    public get color(): number {
+        const materialType = (this.material as Material).type;
+        switch (materialType) {
+            case 'MeshBasicMaterial':
+                let basicMaterial = this.material as THREE.MeshBasicMaterial;
+                return basicMaterial.color.getHex();
+            case 'MeshLambertMaterial':
+                let lambertMaterial = this.material as THREE.MeshLambertMaterial;
+                return lambertMaterial.color.getHex();
+            default:
+                throw new Error("Unsupported material type: " + materialType);
+        }
+    }
+
+    public set color(value: number) {
+        const materialType = (this.material as Material).type;
+        switch (materialType) {
+            case 'MeshBasicMaterial':
+                let basicMaterial = this.material as MeshBasicMaterial;
+                basicMaterial.color.setHex(value);
+                break;
+            case 'MeshLambertMaterial':
+                let lambertMaterial = this.material as MeshLambertMaterial;
+                lambertMaterial.color.setHex(value);
+                break;
+            default:
+                throw new Error("Unsupported material type: " + materialType);
+        }
     }
 }

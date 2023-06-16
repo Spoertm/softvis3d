@@ -18,7 +18,8 @@
 /// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
 ///
 
-import { MeshLambertMaterial, BoxGeometry } from "three";
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { MeshLambertMaterial, BoxGeometry, Vector3, ConeBufferGeometry, CylinderBufferGeometry, MeshBasicMaterial } from "three";
 import { SoftVis3dMesh } from "../../domain/SoftVis3dMesh";
 import { SoftVis3dShape } from "../../domain/SoftVis3dShape";
 
@@ -29,6 +30,17 @@ export class ObjectFactory {
         for (const shape of shapes) {
             result.push(this._getShape(shape));
         }
+
+        const embedHelperPos = shapes.find((shape) => shape.key.includes("EmbedHelper.cs")) as SoftVis3dShape;
+        const ddstatsPos = shapes.find((shape) => shape.key.includes("site.css")) as SoftVis3dShape;
+
+        const vec = new Vector3(embedHelperPos.position._x, embedHelperPos.position._z, embedHelperPos.position._y);
+        const vec2 = new Vector3(ddstatsPos.position._x, ddstatsPos.position._z, ddstatsPos.position._y);
+
+        console.log("vec", vec, "\nvec2", vec2);
+
+        const arrow = this.getArrow(vec, vec2);
+        result.push(arrow);
 
         return result;
     }
@@ -46,7 +58,7 @@ export class ObjectFactory {
 
         const material = new MeshLambertMaterial({
             color: element.color,
-            transparent: true,
+            transparent: false,
             opacity: element.opacity,
         });
 
@@ -56,5 +68,37 @@ export class ObjectFactory {
         cube.position.setZ(element.position._y);
 
         return cube;
+    }
+
+    private static getArrow(origin: Vector3, target: Vector3): SoftVis3dMesh {
+        const arrowLength = origin.distanceTo(target);
+        const arrowRadius = 1.5;
+        const coneHeight = 15;
+        const coneRadius = 4;
+
+        const cylinderGeometry = new CylinderBufferGeometry(arrowRadius, arrowRadius, arrowLength - coneHeight, 32);
+        cylinderGeometry.translate(0, (arrowLength - coneHeight) / 2, 0);
+
+        const coneGeometry = new ConeBufferGeometry(coneRadius, coneHeight, 32);
+        coneGeometry.translate(0, arrowLength - coneHeight / 2, 0);
+
+        const arrowGeometry = BufferGeometryUtils.mergeBufferGeometries([cylinderGeometry, coneGeometry]);
+        const arrowMaterial = new MeshBasicMaterial({
+            color: 0xFF00E6, // pink
+            opacity: 1.0,
+        });
+
+        const arrowMesh = new SoftVis3dMesh("arrow-" + origin + "-" + target, arrowGeometry, arrowMaterial);
+
+        arrowMesh.position.set(origin.x, origin.y, origin.z);
+        const direction = new Vector3(
+            target.x - origin.x,
+            target.y - origin.y,
+            target.z - origin.z
+        ).normalize();
+
+        arrowMesh.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), direction);
+
+        return arrowMesh;
     }
 }
