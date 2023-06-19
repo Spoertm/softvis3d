@@ -21,13 +21,6 @@
 import { BufferGeometry, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial } from "three";
 
 export class SoftVis3dMesh extends Mesh {
-    /**
-     * @Override material from Mesh
-     *
-     * package private in Mesh, public here.
-     * Override to provide MeshLambertMaterial instead of Material
-     */
-
     private readonly softVis3dId: string;
 
     constructor(softVis3dId: string, geometry: BufferGeometry, material: Material) {
