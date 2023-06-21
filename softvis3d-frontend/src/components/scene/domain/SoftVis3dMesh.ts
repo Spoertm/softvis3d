@@ -36,12 +36,14 @@ export class SoftVis3dMesh extends Mesh {
     public get color(): number {
         const materialType = (this.material as Material).type;
         switch (materialType) {
-            case 'MeshBasicMaterial':
-                let basicMaterial = this.material as THREE.MeshBasicMaterial;
+            case "MeshBasicMaterial": {
+                const basicMaterial = this.material as THREE.MeshBasicMaterial;
                 return basicMaterial.color.getHex();
-            case 'MeshLambertMaterial':
-                let lambertMaterial = this.material as THREE.MeshLambertMaterial;
+            }
+            case "MeshLambertMaterial": {
+                const lambertMaterial = this.material as THREE.MeshLambertMaterial;
                 return lambertMaterial.color.getHex();
+            }
             default:
                 throw new Error("Unsupported material type: " + materialType);
         }
@@ -50,14 +52,16 @@ export class SoftVis3dMesh extends Mesh {
     public set color(value: number) {
         const materialType = (this.material as Material).type;
         switch (materialType) {
-            case 'MeshBasicMaterial':
-                let basicMaterial = this.material as MeshBasicMaterial;
+            case "MeshBasicMaterial": {
+                const basicMaterial = this.material as MeshBasicMaterial;
                 basicMaterial.color.setHex(value);
                 break;
-            case 'MeshLambertMaterial':
-                let lambertMaterial = this.material as MeshLambertMaterial;
+            }
+            case "MeshLambertMaterial": {
+                const lambertMaterial = this.material as MeshLambertMaterial;
                 lambertMaterial.color.setHex(value);
                 break;
+            }
             default:
                 throw new Error("Unsupported material type: " + materialType);
         }
