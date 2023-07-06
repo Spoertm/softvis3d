@@ -21,28 +21,107 @@
 import { MeshLambertMaterial, BoxGeometry, Vector3 } from "three";
 import { SoftVis3dMesh } from "../../domain/SoftVis3dMesh";
 import { SoftVis3dShape } from "../../domain/SoftVis3dShape";
-import { SoftVis3dArrow } from '../../domain/SoftVis3dArrow';
+import { SoftVis3dArrow } from "../../domain/SoftVis3dArrow";
+import { ArchitectureProvider } from "../../../../services/Architecture/ArchitectureProvider";
+import { Relation } from "../../../../services/Architecture/Relation";
+import { SoftVis3dArrowFactory } from "../../domain/SoftVis3dArrowFactory";
+import { Mapping } from "../../../../services/Architecture/Mapping";
 
 export class ObjectFactory {
     public static getSceneObjects(shapes: SoftVis3dShape[]): SoftVis3dMesh[] {
         const result: SoftVis3dMesh[] = [];
 
-        for (const shape of shapes) {
-            result.push(this._getShape(shape));
-        }
+        shapes.forEach((s) => result.push(this._getShape(s)));
 
-        const originHouse = shapes.find((shape) => shape.key.includes("WebService.cs")) as SoftVis3dShape;
-        const targetHouse = shapes.find((shape) => shape.key.includes("site.css")) as SoftVis3dShape;
-
-        const vec = new Vector3(originHouse.position._x, originHouse.position._z, originHouse.position._y);
-        const vec2 = new Vector3(targetHouse.position._x, targetHouse.position._z, targetHouse.position._y);
-
-        console.log("vec", vec, "\nvec2", vec2);
-
-        const arrow = new SoftVis3dArrow("arrow", vec, vec2);
-        result.push(arrow);
+        const arrows = this.getDependencyArrows(shapes);
+        result.push(...arrows);
 
         return result;
+    }
+
+    private static getDependencyArrows(shapes: SoftVis3dShape[]): SoftVis3dArrow[] {
+        console.log(shapes[0]);
+        const result: SoftVis3dArrow[] = [];
+
+        const systemArchitecture = ArchitectureProvider.getSystemArchitecture();
+        const c2cDependencies = ArchitectureProvider.getC2cDependencies();
+
+        const highLevelRelations = c2cDependencies.map((dep) => {
+            const split = dep.split(",");
+            const fromFile = split[0];
+            const toFile = split[1];
+
+            const fromModule = ArchitectureProvider.moduleOf(fromFile, systemArchitecture.Mappings);
+            const toModule = ArchitectureProvider.moduleOf(toFile, systemArchitecture.Mappings);
+
+            return new Relation(fromModule, toModule);
+        }).filter(
+            (relation, index, self) =>
+                index ===
+                self.findIndex((t) =>
+                    t.SourceModule !== t.TargetModule &&
+                    t.SourceModule === relation.SourceModule &&
+                    t.TargetModule === relation.TargetModule
+                )
+        );
+
+        highLevelRelations.forEach((relation) => {
+            const fromShape = shapes.find((s) => s.key.endsWith(relation.SourceModule));
+            const toShape = shapes.find((s) => s.key.endsWith(relation.TargetModule));
+
+            if (fromShape && toShape) {
+                const relatedDependencyIds = this.getRelatedDependencyIds(
+                    relation,
+                    c2cDependencies,
+                    systemArchitecture.Mappings
+                );
+
+                const key = fromShape.key + " => " + toShape.key;
+                const arrow = SoftVis3dArrowFactory.create(
+                    key,
+                    this.getCentroid(fromShape),
+                    this.getCentroid(toShape),
+                    relatedDependencyIds,
+                );
+
+                result.push(arrow);
+            }
+        });
+
+        return result;
+    }
+
+    private static getRelatedDependencyIds(relation: Relation, allC2c: string[], mapping: Mapping[]): string[] {
+        const c2cBetweenModules: string[] = ArchitectureProvider.getC2cDependenciesBetweenModules(
+            relation.SourceModule,
+            relation.TargetModule,
+            allC2c,
+            mapping);
+
+        // Remake from csv format to "from => to"
+        const modifiedC2cBetweenModules: string[] = c2cBetweenModules.map(c2c => {
+            const split = c2c.split(",");
+            const fromFile = split[0];
+            const toFile = split[1];
+
+            return fromFile + " => " + toFile;
+        });
+
+        return modifiedC2cBetweenModules;
+    }
+
+    private static getCentroid(shape: SoftVis3dShape, originShape = false): Vector3 {
+        const centerX = originShape
+            ? shape.position._x
+            : shape.position._x + shape.dimensions.length / 2;
+
+        const centerY = originShape
+            ? shape.position._y
+            : shape.position._y + shape.dimensions.width / 2;
+
+        const centerZ = shape.position._z + shape.dimensions.height / 2;
+
+        return new Vector3(centerX, centerZ, centerY);
     }
 
     private static _getShape(element: SoftVis3dShape): SoftVis3dMesh {
