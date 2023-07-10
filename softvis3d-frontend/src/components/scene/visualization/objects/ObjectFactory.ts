@@ -25,6 +25,7 @@ import { SoftVis3dArrow } from "../../domain/SoftVis3dArrow";
 import { ArchitectureProvider } from "../../../../services/Architecture/ArchitectureProvider";
 import { Relation } from "../../../../services/Architecture/Relation";
 import { SoftVis3dArrowFactory } from "../../domain/SoftVis3dArrowFactory";
+import { ArrowColor } from "../../../../constants/ArrowColor";
 import { Mapping } from "../../../../services/Architecture/Mapping";
 
 export class ObjectFactory {
@@ -40,7 +41,6 @@ export class ObjectFactory {
     }
 
     private static getDependencyArrows(shapes: SoftVis3dShape[]): SoftVis3dArrow[] {
-        console.log(shapes[0]);
         const result: SoftVis3dArrow[] = [];
 
         const systemArchitecture = ArchitectureProvider.getSystemArchitecture();
@@ -55,7 +55,7 @@ export class ObjectFactory {
             const toModule = ArchitectureProvider.moduleOf(toFile, systemArchitecture.Mappings);
 
             return new Relation(fromModule, toModule);
-        }).filter(
+        }).filter( // filter out duplicate relations
             (relation, index, self) =>
                 index ===
                 self.findIndex((t) =>
@@ -65,49 +65,85 @@ export class ObjectFactory {
                 )
         );
 
+        // for each relation, draw an arrow
         highLevelRelations.forEach((relation) => {
-            const fromShape = shapes.find((s) => s.key.endsWith(relation.SourceModule));
-            const toShape = shapes.find((s) => s.key.endsWith(relation.TargetModule));
+            const sourceModule = shapes.find((s) => s.key.endsWith(relation.SourceModule));
+            const targetModule = shapes.find((s) => s.key.endsWith(relation.TargetModule));
 
-            if (fromShape && toShape) {
-                const relatedDependencyIds = this.getRelatedDependencyIds(
-                    relation,
-                    c2cDependencies,
-                    systemArchitecture.Mappings
-                );
-
-                const key = fromShape.key + " => " + toShape.key;
-                const arrow = SoftVis3dArrowFactory.create(
-                    key,
-                    this.getCentroid(fromShape),
-                    this.getCentroid(toShape),
-                    relatedDependencyIds,
-                );
-
-                result.push(arrow);
+            if (!sourceModule || !targetModule){
+                console.log("sourceModule or targetModule not found for relation " + relation.SourceModule + " => " + relation.TargetModule);
+                return;
             }
+
+            const relatedDependencyArrows = this.getRelatedDependencyArrows(
+                relation,
+                c2cDependencies,
+                systemArchitecture.Mappings,
+                shapes
+            );
+
+            const key = sourceModule.key + " => " + targetModule.key;
+            const totalViolations = relatedDependencyArrows.reduce(
+                (sum, arrow) => sum + arrow.violations,
+                0
+            );
+
+            const color = totalViolations > 0 ? ArrowColor.red : ArrowColor.pink;
+            const arrow = SoftVis3dArrowFactory.createModuleToModule(
+                key,
+                this.getCentroid(sourceModule, true),
+                this.getCentroid(targetModule),
+                relatedDependencyArrows,
+                totalViolations,
+                color,
+                8
+            );
+
+            result.push(arrow);
         });
 
         return result;
     }
 
-    private static getRelatedDependencyIds(relation: Relation, allC2c: string[], mapping: Mapping[]): string[] {
-        const c2cBetweenModules: string[] = ArchitectureProvider.getC2cDependenciesBetweenModules(
+    private static getRelatedDependencyArrows(
+        relation: Relation,
+        c2cDependencies: string[],
+        mapping: Mapping[],
+        shapes: SoftVis3dShape[]
+    ): SoftVis3dArrow[] {
+        const relatedDependencyArrows: SoftVis3dArrow[] = [];
+
+        const c2cBetweenModules = ArchitectureProvider.getC2cDependenciesBetweenModules(
             relation.SourceModule,
             relation.TargetModule,
-            allC2c,
-            mapping);
+            c2cDependencies,
+            mapping
+        ).filter((dep, index, self) => index === self.findIndex((t) => t === dep)); // filter out duplicate relations
 
-        // Remake from csv format to "from => to"
-        const modifiedC2cBetweenModules: string[] = c2cBetweenModules.map(c2c => {
-            const split = c2c.split(",");
-            const fromFile = split[0];
-            const toFile = split[1];
+        c2cBetweenModules.forEach((dep) => {
+            const split = dep.split(",");
+            const sourceFileSlashes = split[0].replace(/\./g, "/");
+            const targetFileSlashes = split[1].replace(/\./g, "/");
+            const violations = parseInt(split[2]);
 
-            return fromFile + " => " + toFile;
+            const sourceShape = shapes.find((s) => s.key.includes(sourceFileSlashes));
+            const targetShape = shapes.find((s) => s.key.includes(targetFileSlashes));
+
+            if (!sourceShape || !targetShape)
+                return;
+
+            const key = sourceShape.key + " => " + targetShape.key;
+            const arrow = SoftVis3dArrowFactory.createHouseToHouse(
+                key,
+                this.getCentroid(sourceShape, true),
+                this.getCentroid(targetShape),
+                violations,
+            );
+
+            relatedDependencyArrows.push(arrow);
         });
 
-        return modifiedC2cBetweenModules;
+        return relatedDependencyArrows;
     }
 
     private static getCentroid(shape: SoftVis3dShape, originShape = false): Vector3 {
@@ -125,7 +161,7 @@ export class ObjectFactory {
     }
 
     private static _getShape(element: SoftVis3dShape): SoftVis3dMesh {
-        element.opacity = 1;
+        element.opacity = 1.5;
 
         const z = element.position._z + Math.floor(element.dimensions.height / 2);
 

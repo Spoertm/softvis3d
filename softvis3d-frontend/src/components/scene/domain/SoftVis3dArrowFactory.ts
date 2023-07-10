@@ -1,19 +1,64 @@
 import { ConeBufferGeometry, CylinderBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { SoftVis3dArrow } from "./SoftVis3dArrow";
+import { ArrowColor } from "../../../constants/ArrowColor";
 
 export class SoftVis3dArrowFactory {
-    public static create(
+    public static createModuleToModule(
         key: string,
         origin: Vector3,
         target: Vector3,
-        relatedDependencyIds: string[],
-        color = 0xff00e6
+        relatedDependencies: SoftVis3dArrow[],
+        violations: number = 0,
+        color = ArrowColor.pink,
+        scale = 1
+    ): SoftVis3dArrow {
+        return SoftVis3dArrowFactory.createUniversal(
+            key,
+            origin,
+            target,
+            relatedDependencies,
+            "m2m",
+            violations,
+            color,
+            scale
+        );
+    }
+
+    public static createHouseToHouse(
+        key: string,
+        origin: Vector3,
+        target: Vector3,
+        violations: number = 0,
+        scale = 1
+    ): SoftVis3dArrow {
+        const color = violations > 0 ? ArrowColor.red : ArrowColor.green;
+        return SoftVis3dArrowFactory.createUniversal(
+            key,
+            origin,
+            target,
+            [],
+            "c2c",
+            violations,
+            color,
+            scale
+        );
+    }
+
+    public static createUniversal(
+        key: string,
+        origin: Vector3,
+        target: Vector3,
+        relatedDependencyArrows: SoftVis3dArrow[],
+        arrowType: string,
+        violations: number,
+        color: number,
+        scale = 1
     ): SoftVis3dArrow {
         const arrowLength = origin.distanceTo(target);
-        const arrowRadius = 1.5;
-        const coneHeight = 15;
-        const coneRadius = 4;
+        const arrowRadius = 1.5 * scale;
+        const coneHeight = 15 * scale;
+        const coneRadius = 4 * scale;
 
         const cylinderGeometry = new CylinderBufferGeometry(
             arrowRadius,
@@ -37,7 +82,14 @@ export class SoftVis3dArrowFactory {
             opacity: 1.0,
         });
 
-        const arrow = new SoftVis3dArrow(key, arrowGeometry, arrowMaterial, relatedDependencyIds);
+        const arrow = new SoftVis3dArrow(
+            key,
+            arrowGeometry,
+            arrowMaterial,
+            relatedDependencyArrows,
+            arrowType,
+            violations
+        );
 
         arrow.position.set(origin.x, origin.y, origin.z);
 

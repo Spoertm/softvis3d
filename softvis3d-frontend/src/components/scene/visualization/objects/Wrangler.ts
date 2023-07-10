@@ -25,6 +25,7 @@ import SceneStore from "../../../../stores/SceneStore";
 import { SoftVis3dMesh } from "../../domain/SoftVis3dMesh";
 import { SoftVis3dShape } from "../../domain/SoftVis3dShape";
 import { ObjectFactory } from "./ObjectFactory";
+import { SoftVis3dArrow } from "../../domain/SoftVis3dArrow";
 
 /**
  * @class This is a resource manager and loads individual models.
@@ -35,6 +36,7 @@ import { ObjectFactory } from "./ObjectFactory";
 @injectable()
 export class Wrangler {
     private objectsInView: SoftVis3dMesh[] = [];
+    private relatedArrowsInView: SoftVis3dArrow[] = [];
 
     @lazyInject("SceneStore")
     private readonly sceneStore!: SceneStore;
@@ -49,7 +51,7 @@ export class Wrangler {
         }
     }
 
-    public updateColorsWithUpdatedShapes(shapes: SoftVis3dShape[]) {
+    public updateColorsWithUpdatedShapes(shapes: SoftVis3dShape[], scene: Scene) {
         const resultObjects: SoftVis3dMesh[] = ObjectFactory.getSceneObjects(shapes);
 
         // update colors
@@ -59,35 +61,57 @@ export class Wrangler {
 
         // update selected object
         if (this.sceneStore.selectedTreeObjects.length > 0) {
-            const formerSelectedObjectId: string =
-                this.sceneStore.selectedTreeObjects[0].object.getSoftVis3dId();
+            const formerSelectedObject = this.sceneStore.selectedTreeObjects[0].object;
+            const formerSelectedObjectId: string = formerSelectedObject.getSoftVis3dId();
+
             this.sceneStore.selectedTreeObjects = [];
-            this.selectSceneTreeObject(formerSelectedObjectId);
+            this.selectSceneTreeObject(formerSelectedObjectId, scene);
         }
     }
 
-    public selectSceneTreeObject(objectSoftVis3dId: string | null) {
+    public selectSceneTreeObject(objectSoftVis3dId: string | null, scene: Scene) {
         // reset former selected objects
 
         for (const previousSelection of this.sceneStore.selectedTreeObjects) {
             previousSelection.object.color = previousSelection.color;
         }
 
+        if (objectSoftVis3dId === null) {
+            this.removeRelatedArrowsIfNeeded(null, scene);
+            return;
+        }
+
+        const currentSelection = this.objectsInView.find((obj) => obj.getSoftVis3dId() === objectSoftVis3dId);
+        if (!currentSelection) return;
+
+        this.removeRelatedArrowsIfNeeded(currentSelection, scene);
+
         this.sceneStore.selectedTreeObjects = [];
 
-        if (objectSoftVis3dId !== null) {
-            for (const obj of this.objectsInView) {
-                if (objectSoftVis3dId === obj.getSoftVis3dId()) {
-                    const selectedObjectInformation = {
-                        object: obj,
-                        color: obj.color,
-                    };
+        const selectedObjectInformation = {
+            object: currentSelection,
+            color: currentSelection.color,
+        };
 
-                    this.sceneStore.selectedTreeObjects.push(selectedObjectInformation);
+        this.sceneStore.selectedTreeObjects.push(selectedObjectInformation);
 
-                    obj.color = 0xffc519;
-                }
-            }
+        currentSelection.color = 0xffc519;
+
+        if (currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "m2m") {
+            const relatedArrows = (currentSelection as SoftVis3dArrow).relatedDependencyArrows;
+            scene.add(...relatedArrows);
+            this.objectsInView.push(...relatedArrows);
+            this.relatedArrowsInView.push(...relatedArrows);
+        }
+    }
+
+    private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
+        const currentSelectionIsC2cArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "c2c";
+
+        if (!currentSelectionIsC2cArrow) {
+            scene.remove(...this.relatedArrowsInView);
+            this.removeObjectsInView(...this.relatedArrowsInView);
+            this.relatedArrowsInView = [];
         }
     }
 
@@ -105,6 +129,15 @@ export class Wrangler {
     private removeAllFromScene(scene: Scene) {
         while (this.objectsInView.length) {
             scene.remove(this.objectsInView.pop() as SoftVis3dMesh);
+        }
+    }
+
+    private removeObjectsInView(...object: SoftVis3dMesh[]) {
+        for (const objToRemove of object) {
+            const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === objToRemove.getSoftVis3dId());
+            if (index !== -1) {
+                this.objectsInView.splice(index, 1);
+            }
         }
     }
 }

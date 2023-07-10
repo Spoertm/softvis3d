@@ -52,6 +52,8 @@ export class SelectionCalculator {
             result = object.getSoftVis3dId();
         }
 
+        console.log(result);
+
         return result;
     }
 

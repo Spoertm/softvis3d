@@ -66,10 +66,10 @@ export default class ThreeSceneService {
 
         if (this.lastOptions && options.equalStructure(this.lastOptions)) {
             if (this.lastOptions.metricColor !== options.metricColor) {
-                this.wrangler.updateColorsWithUpdatedShapes(this.sceneStore.shapes);
+                this.wrangler.updateColorsWithUpdatedShapes(this.sceneStore.shapes, this.threeScene.scene);
             }
             if (this.lastOptions.buildingColorTheme !== options.buildingColorTheme) {
-                this.wrangler.updateColorsWithUpdatedShapes(this.sceneStore.shapes);
+                this.wrangler.updateColorsWithUpdatedShapes(this.sceneStore.shapes, this.threeScene.scene);
             }
         } else {
             this.loadSoftVis3d(this.sceneStore.shapes, this.sceneStore.cameraPosition);
@@ -86,7 +86,7 @@ export default class ThreeSceneService {
 
     public selectSceneTreeObject(objectSoftVis3dId: string | null) {
         if (this.wrangler) {
-            this.wrangler.selectSceneTreeObject(objectSoftVis3dId);
+            this.wrangler.selectSceneTreeObject(objectSoftVis3dId, this.threeScene.scene);
         }
     }
 
