@@ -106,11 +106,19 @@ export class Wrangler {
     }
 
     private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
-        const currentSelectionIsC2cArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "c2c";
+        const curreltSelectionIsM2mArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "m2m";
 
-        if (!currentSelectionIsC2cArrow) {
+        if (currentSelection === null || curreltSelectionIsM2mArrow) {
             scene.remove(...this.relatedArrowsInView);
-            this.removeObjectsInView(...this.relatedArrowsInView);
+
+            // remove related arrows from objectsInView
+            for (const objToRemove of this.relatedArrowsInView) {
+                const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === objToRemove.getSoftVis3dId());
+                if (index !== -1) {
+                    this.objectsInView.splice(index, 1);
+                }
+            }
+
             this.relatedArrowsInView = [];
         }
     }
@@ -129,15 +137,6 @@ export class Wrangler {
     private removeAllFromScene(scene: Scene) {
         while (this.objectsInView.length) {
             scene.remove(this.objectsInView.pop() as SoftVis3dMesh);
-        }
-    }
-
-    private removeObjectsInView(...object: SoftVis3dMesh[]) {
-        for (const objToRemove of object) {
-            const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === objToRemove.getSoftVis3dId());
-            if (index !== -1) {
-                this.objectsInView.splice(index, 1);
-            }
         }
     }
 }
