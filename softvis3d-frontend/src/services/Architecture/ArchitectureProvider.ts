@@ -1,3 +1,4 @@
+import { C2cRelation } from "./C2cRelation";
 import { Mapping } from "./Mapping";
 import { Relation } from "./Relation";
 import { SystemArchitecture } from "./SystemArchitecture";
@@ -87,14 +88,11 @@ util document`
     public static getC2cDependenciesBetweenModules(
         moduleOne: string,
         moduleTwo: string,
-        allC2c: string[],
+        allC2c: C2cRelation[],
         mapping: Mapping[],
-    ): string[] {
+    ): C2cRelation[] {
         const c2cDependencies = allC2c.filter((c2c) => {
-            const split = c2c.split(",");
-            const source = split[0];
-            const target = split[1];
-            return this.moduleOf(source, mapping) === moduleOne && this.moduleOf(target, mapping) === moduleTwo;
+            return this.moduleOf(c2c.SourceClass, mapping) === moduleOne && this.moduleOf(c2c.TargetClass, mapping) === moduleTwo;
         });
 
         return c2cDependencies;
@@ -105,8 +103,8 @@ util document`
         return mappingForFile ? mappingForFile.Module : "";
     }
 
-    public static getC2cDependencies(): string[] {
-        const words = `org.apache.lucene.analysis.Analyzer,org.apache.lucene.analysis.TokenStream,0
+    public static getC2cDependencies(): C2cRelation[] {
+        const c2cLines = `org.apache.lucene.analysis.Analyzer,org.apache.lucene.analysis.TokenStream,0
 org.apache.lucene.analysis.Analyzer,org.apache.lucene.document.Fieldable,0
 org.apache.lucene.analysis.Analyzer,org.apache.lucene.store.AlreadyClosedException,1
 org.apache.lucene.analysis.Analyzer,org.apache.lucene.util.CloseableThreadLocal,0
@@ -7905,6 +7903,13 @@ org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.store.IndexOutput,1
 org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.util.packed.PackedInts,0
 org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.util.packed.PackedInts$Writer,0`;
 
-        return words.split('\n');
+        const c2cRelations = c2cLines
+            .split('\n')
+            .map(line => {
+                const split = line.split(',');
+                return new C2cRelation(split[0], split[1], parseInt(split[2]));
+            });
+
+        return c2cRelations;
     }
 }

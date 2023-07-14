@@ -27,6 +27,7 @@ import { Relation } from "../../../../services/Architecture/Relation";
 import { SoftVis3dArrowFactory } from "../../domain/SoftVis3dArrowFactory";
 import { ArrowColor } from "../../../../constants/ArrowColor";
 import { Mapping } from "../../../../services/Architecture/Mapping";
+import { C2cRelation } from "../../../../services/Architecture/C2cRelation";
 
 export class ObjectFactory {
     public static getSceneObjects(shapes: SoftVis3dShape[]): SoftVis3dMesh[] {
@@ -46,13 +47,9 @@ export class ObjectFactory {
         const systemArchitecture = ArchitectureProvider.getSystemArchitecture();
         const c2cDependencies = ArchitectureProvider.getC2cDependencies();
 
-        const highLevelRelations = c2cDependencies.map((dep) => {
-            const split = dep.split(",");
-            const fromFile = split[0];
-            const toFile = split[1];
-
-            const fromModule = ArchitectureProvider.moduleOf(fromFile, systemArchitecture.Mappings);
-            const toModule = ArchitectureProvider.moduleOf(toFile, systemArchitecture.Mappings);
+        const highLevelRelations = c2cDependencies.map((c2cR) => {
+            const fromModule = ArchitectureProvider.moduleOf(c2cR.SourceClass, systemArchitecture.Mappings);
+            const toModule = ArchitectureProvider.moduleOf(c2cR.TargetClass, systemArchitecture.Mappings);
 
             return new Relation(fromModule, toModule);
         }).filter( // filter out duplicate relations
@@ -107,7 +104,7 @@ export class ObjectFactory {
 
     private static getRelatedDependencyArrows(
         relation: Relation,
-        c2cDependencies: string[],
+        c2cDependencies: C2cRelation[],
         mapping: Mapping[],
         shapes: SoftVis3dShape[]
     ): SoftVis3dArrow[] {
@@ -120,11 +117,9 @@ export class ObjectFactory {
             mapping
         ).filter((dep, index, self) => index === self.findIndex((t) => t === dep)); // filter out duplicate relations
 
-        c2cBetweenModules.forEach((dep) => {
-            const split = dep.split(",");
-            const sourceFileSlashes = split[0].replace(/\./g, "/");
-            const targetFileSlashes = split[1].replace(/\./g, "/");
-            const violations = parseInt(split[2]);
+        c2cBetweenModules.forEach((c2cR) => {
+            const sourceFileSlashes = c2cR.SourceClass.replace(/\./g, "/");
+            const targetFileSlashes = c2cR.TargetClass.replace(/\./g, "/");
 
             const sourceShape = shapes.find((s) => s.key.includes(sourceFileSlashes));
             const targetShape = shapes.find((s) => s.key.includes(targetFileSlashes));
@@ -137,7 +132,7 @@ export class ObjectFactory {
                 key,
                 this.getCentroid(sourceShape, true),
                 this.getCentroid(targetShape),
-                violations,
+                c2cR.Violations,
             );
 
             relatedDependencyArrows.push(arrow);
