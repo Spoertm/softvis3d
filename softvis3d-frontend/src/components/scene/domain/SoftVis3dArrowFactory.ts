@@ -10,7 +10,7 @@ export class SoftVis3dArrowFactory {
         target: Vector3,
         relatedDependencies: SoftVis3dArrow[],
         violations: number = 0,
-        color = ArrowColor.pink,
+        color = ArrowColor.blue,
         scale = 1
     ): SoftVis3dArrow {
         return SoftVis3dArrowFactory.createUniversal(

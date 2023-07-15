@@ -85,7 +85,7 @@ export class ObjectFactory {
                 0
             );
 
-            const color = totalViolations > 0 ? ArrowColor.red : ArrowColor.pink;
+            const color = totalViolations > 0 ? ArrowColor.red : ArrowColor.blue;
             const arrow = SoftVis3dArrowFactory.createModuleToModule(
                 key,
                 this.getCentroid(sourceModule, true),
