@@ -36,7 +36,7 @@ const evostreet = new Layout(
 const islands = new Layout(
     "reflexionislands",
     "Reflexion Islands",
-    "Visualises code modules in islands. Each island will contain an Evostreet view."
+    "Visualises code modules in islands. Includes the dependencies between the modules and classes."
 );
 
 export { district, evostreet, islands };
