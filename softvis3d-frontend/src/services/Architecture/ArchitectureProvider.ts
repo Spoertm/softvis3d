@@ -11,7 +11,7 @@ export class ArchitectureProvider {
 #lucene-file-metrics.csv
 
 # modules
-queryparser
+queryParser
 search
 index
 store
@@ -20,7 +20,7 @@ util
 document
 # mapping
 # <high_level_module> <regular_expression>
-queryparser org\.apache\.lucene\.queryParser\.*
+queryParser org\.apache\.lucene\.queryParser\.*
 search org\.apache\.lucene\.search\.*
 index org\.apache\.lucene\.index\.*
 store org\.apache\.lucene\.store\.*
@@ -29,10 +29,10 @@ util org\.apache\.lucene\.(util|messages)\.*
 document org\.apache\.lucene\.document\.*
 # relations
 # <source_module> <target_module>
-queryparser search
-queryparser index
-queryparser document
-queryparser util
+queryParser search
+queryParser index
+queryParser document
+queryParser util
 search index
 search analysis
 search document
