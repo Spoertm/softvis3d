@@ -47,12 +47,15 @@ export class ObjectFactory {
         const systemArchitecture = ArchitectureProvider.getSystemArchitecture();
         const c2cDependencies = ArchitectureProvider.getC2cDependencies();
 
-        const highLevelRelations = c2cDependencies.map((c2cR) => {
-            const fromModule = ArchitectureProvider.moduleOf(c2cR.SourceClass, systemArchitecture.Mappings);
-            const toModule = ArchitectureProvider.moduleOf(c2cR.TargetClass, systemArchitecture.Mappings);
+        const highLevelRelations = c2cDependencies
+            .map((c2cR) => {
+                const fromModule = ArchitectureProvider.moduleOf(c2cR.SourceClass, systemArchitecture.Mappings);
+                const toModule = ArchitectureProvider.moduleOf(c2cR.TargetClass, systemArchitecture.Mappings);
 
-            return new Relation(fromModule, toModule);
-        }).filter( // filter out duplicate relations
+                return new Relation(fromModule, toModule);
+            });
+
+        const relationsNoDups = highLevelRelations.filter( // filter out duplicate relations
             (relation, index, self) =>
                 index ===
                 self.findIndex((t) =>
@@ -63,11 +66,11 @@ export class ObjectFactory {
         );
 
         // for each relation, draw an arrow
-        highLevelRelations.forEach((relation) => {
+        relationsNoDups.forEach((relation) => {
             const sourceModule = shapes.find((s) => s.key.endsWith(relation.SourceModule));
             const targetModule = shapes.find((s) => s.key.endsWith(relation.TargetModule));
 
-            if (!sourceModule || !targetModule){
+            if (!sourceModule || !targetModule) {
                 console.log("sourceModule or targetModule not found for relation " + relation.SourceModule + " => " + relation.TargetModule);
                 return;
             }
