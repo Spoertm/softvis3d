@@ -106,9 +106,9 @@ export class Wrangler {
     }
 
     private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
-        const curreltSelectionIsM2mArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "m2m";
+        const currentSelectionIsM2mArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === "m2m";
 
-        if (currentSelection === null || curreltSelectionIsM2mArrow) {
+        if (currentSelection === null || currentSelectionIsM2mArrow) {
             scene.remove(...this.relatedArrowsInView);
 
             // remove related arrows from objectsInView
