@@ -18,7 +18,7 @@ export class SoftVis3dArrowFactory {
             origin,
             target,
             relatedDependencies,
-            "m2m",
+            ArrowType.M2M,
             violations,
             color,
             scale
@@ -38,7 +38,7 @@ export class SoftVis3dArrowFactory {
             origin,
             target,
             [],
-            "c2c",
+            ArrowType.C2C,
             violations,
             color,
             scale
@@ -50,7 +50,7 @@ export class SoftVis3dArrowFactory {
         origin: Vector3,
         target: Vector3,
         relatedDependencyArrows: SoftVis3dArrow[],
-        arrowType: string,
+        arrowType: ArrowType,
         violations: number,
         color: number,
         scale = 1
@@ -104,3 +104,8 @@ export class SoftVis3dArrowFactory {
         return arrow;
     }
 }
+
+export enum ArrowType {
+    C2C,
+    M2M,
+};

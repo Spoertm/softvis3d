@@ -1,9 +1,10 @@
 import { BufferGeometry, Material } from "three";
 import { SoftVis3dMesh } from "./SoftVis3dMesh";
+import { ArrowType } from "./SoftVis3dArrowFactory";
 
 export class SoftVis3dArrow extends SoftVis3dMesh {
     private _relatedDependencyArrows: SoftVis3dArrow[];
-    private _arrowType: string;
+    private _arrowType: ArrowType;
     private _violations: number;
 
     constructor(
@@ -11,7 +12,7 @@ export class SoftVis3dArrow extends SoftVis3dMesh {
         geometry: BufferGeometry,
         material: Material,
         relatedDependencyArrows: SoftVis3dArrow[],
-        arrowType: string,
+        arrowType: ArrowType,
         violations: number
     ) {
         super(key, geometry, material);
@@ -25,7 +26,7 @@ export class SoftVis3dArrow extends SoftVis3dMesh {
         return this._relatedDependencyArrows;
     }
 
-    public get arrowType(): string {
+    public get arrowType(): ArrowType {
         return this._arrowType;
     }
 
@@ -35,5 +36,13 @@ export class SoftVis3dArrow extends SoftVis3dMesh {
 
     public get doesViolate(): boolean {
         return this._violations > 0;
+    }
+
+    public from(): string {
+        return this.getSoftVis3dId().split(" => ")[0];
+    }
+
+    public to(): string {
+        return this.getSoftVis3dId().split(" => ")[1];
     }
 }

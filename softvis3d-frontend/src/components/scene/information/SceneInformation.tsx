@@ -29,6 +29,7 @@ import { lazyInject } from "../../../inversify.config";
 import SelectedElementService from "../../../services/SelectedElementService";
 import SelectBoxBuilder from "../../ui/selectbox/SelectBoxBuilder";
 import MetricKey from "./MetricKey";
+import { Wrangler } from "../visualization/objects/Wrangler";
 
 /**
  * Bottom bar with information about the current selected metrics.
@@ -39,6 +40,8 @@ export default class SceneInformation extends React.Component<Record<string, unk
     private readonly selectedElementService!: SelectedElementService;
     @lazyInject("VisualizationOptionStore")
     private readonly visualizationOptions!: VisualizationOptionStore;
+    @lazyInject("Wrangler")
+    private readonly wrangler!: Wrangler;
 
     public render() {
         const selectedElement = this.selectedElementService.getSelectedElement();
@@ -65,6 +68,22 @@ export default class SceneInformation extends React.Component<Record<string, unk
                     }}
                     append={this.renderColorInformation(selectedElement)}
                 />
+
+                <div>
+                    <div>
+                        <input type="checkbox" id="highlightBuildings" name="highlightBuildings" 
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                this.wrangler.highlightHouses = e.target.checked;
+                            }}
+                        />
+                        <label>Highlight houses</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="violationsOnly" name="violationsOnly" />
+                        <label>Show only violations</label>
+                    </div>
+                </div>
             </div>
         );
     }
