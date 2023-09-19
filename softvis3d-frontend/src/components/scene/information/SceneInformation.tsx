@@ -80,7 +80,11 @@ export default class SceneInformation extends React.Component<Record<string, unk
                     </div>
 
                     <div>
-                        <input type="checkbox" id="violationsOnly" name="violationsOnly" />
+                        <input type="checkbox" id="violationsOnly" name="violationsOnly" 
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                this.wrangler.showOnlyViolations = e.target.checked;
+                            }}
+                        />
                         <label>Show only violations</label>
                     </div>
                 </div>

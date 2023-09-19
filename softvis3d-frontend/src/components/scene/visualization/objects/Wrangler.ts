@@ -96,6 +96,21 @@ export class Wrangler {
         this.highlightedHousesInView = [];
     }
 
+    private showOnlyViolatingArrows(flag: boolean) {
+        if (flag) {
+            this.objectsInView
+            // hide non-violating arrows
+            .filter((obj) => obj instanceof SoftVis3dArrow && !(obj as SoftVis3dArrow).doesViolate)
+            .forEach((obj) => {
+                obj.visible = false;
+            });
+        } else {
+            this.objectsInView.forEach((obj) => {
+                obj.visible = true;
+            });
+        }
+    }
+
     public selectSceneTreeObject(objectSoftVis3dId: string | null, scene: Scene) {
         // reset former selected objects
 
@@ -133,7 +148,7 @@ export class Wrangler {
             this.relatedArrowsInView.push(...relatedArrows);
         }
 
-        if (this.highlightedHousesInView.length > 0) 
+        if (this.highlightedHousesInView.length > 0)
             this.disableHouseHighlighting();
 
         this.enableHouseHighlighting();
@@ -182,5 +197,9 @@ export class Wrangler {
         } else {
             this.disableHouseHighlighting();
         }
+    }
+
+    public set showOnlyViolations(showOnlyViolations: boolean) {
+        this.showOnlyViolatingArrows(showOnlyViolations);
     }
 }
