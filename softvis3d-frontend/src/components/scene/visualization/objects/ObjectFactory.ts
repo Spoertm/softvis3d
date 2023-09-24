@@ -55,7 +55,7 @@ export class ObjectFactory {
                 return new Relation(fromModule, toModule);
             });
 
-        const relationsNoDups = highLevelRelations.filter( // filter out duplicate relations
+        const relationsNoDups = highLevelRelations.filter( // filter out duplicate relations and self-references
             (relation, index, self) =>
                 index ===
                 self.findIndex((t) =>
@@ -67,10 +67,10 @@ export class ObjectFactory {
 
         // for each relation, draw an arrow
         relationsNoDups.forEach((relation) => {
-            const sourceModule = shapes.find((s) => s.key.endsWith(relation.SourceModule));
-            const targetModule = shapes.find((s) => s.key.endsWith(relation.TargetModule));
+            const sourceModuleShape = shapes.find((s) => s.key.endsWith(relation.SourceModule));
+            const targetModuleShape = shapes.find((s) => s.key.endsWith(relation.TargetModule));
 
-            if (!sourceModule || !targetModule) {
+            if (!sourceModuleShape || !targetModuleShape) {
                 console.log("sourceModule or targetModule not found for relation " + relation.SourceModule + " => " + relation.TargetModule);
                 return;
             }
@@ -82,7 +82,7 @@ export class ObjectFactory {
                 shapes
             );
 
-            const key = sourceModule.key + " => " + targetModule.key;
+            const key = sourceModuleShape.key + " => " + targetModuleShape.key;
             const totalViolations = relatedDependencyArrows.reduce(
                 (sum, arrow) => sum + arrow.violations,
                 0
@@ -91,8 +91,8 @@ export class ObjectFactory {
             const color = totalViolations > 0 ? ArrowColor.red : ArrowColor.blue;
             const arrow = SoftVis3dArrowFactory.createModuleToModule(
                 key,
-                this.getCentroid(sourceModule, true),
-                this.getCentroid(targetModule),
+                this.getCentroid(sourceModuleShape, true),
+                this.getCentroid(targetModuleShape),
                 relatedDependencyArrows,
                 totalViolations,
                 color,
