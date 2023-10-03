@@ -157,6 +157,7 @@ export class Wrangler {
     private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
         const currentSelectionIsM2mArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === ArrowType.M2M;
 
+        // Only remove related (c2c) arrows if the current selection is the void or a m2m arrow
         if (currentSelection === null || currentSelectionIsM2mArrow) {
             scene.remove(...this.relatedArrowsInView);
 
