@@ -99,11 +99,11 @@ export class Wrangler {
     private showOnlyViolatingArrows(flag: boolean) {
         if (flag) {
             this.objectsInView
-            // hide non-violating arrows
-            .filter((obj) => obj instanceof SoftVis3dArrow && !(obj as SoftVis3dArrow).doesViolate)
-            .forEach((obj) => {
-                obj.visible = false;
-            });
+                // hide non-violating arrows
+                .filter((obj) => obj instanceof SoftVis3dArrow && !(obj as SoftVis3dArrow).doesViolate)
+                .forEach((obj) => {
+                    obj.visible = false;
+                });
         } else {
             this.objectsInView.forEach((obj) => {
                 obj.visible = true;
