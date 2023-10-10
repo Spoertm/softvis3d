@@ -121,6 +121,7 @@ export class Wrangler {
         if (objectSoftVis3dId === null) {
             this.removeRelatedArrowsIfNeeded(null, scene);
             this.disableHouseHighlighting();
+            this.sceneStore.selectedTreeObjects = [];
             return;
         }
 
