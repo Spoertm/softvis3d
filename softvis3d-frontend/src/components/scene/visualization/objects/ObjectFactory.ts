@@ -127,10 +127,8 @@ export class ObjectFactory {
             const sourceShape = shapes.find((s) => s.key.includes(sourceFileSlashes));
             const targetShape = shapes.find((s) => s.key.includes(targetFileSlashes));
 
-            if (!sourceShape || !targetShape) {
-                console.log("sourceShape or targetShape not found for c2cRelation " + c2cR.SourceClass + " => " + c2cR.TargetClass);
+            if (!sourceShape || !targetShape)
                 return;
-            }
 
             const key = sourceShape.key + " => " + targetShape.key;
             const arrow = SoftVis3dArrowFactory.createHouseToHouse(
