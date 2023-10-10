@@ -7905,6 +7905,7 @@ org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.util.packed.PackedI
 
         const c2cRelations = c2cLines
             .split('\n')
+            .filter(line => !line.includes('instantiated')) // TODO: Fix hack. "instatiated" is a folder that exists in contrib, which is omitted
             .map(line => {
                 const split = line.split(',');
                 return new C2cRelation(split[0], split[1], parseInt(split[2]));
