@@ -39,4 +39,15 @@ export default class SelectedElementService {
         }
         return selectedElement;
     }
+
+    public getSelectedElementByKey(key: string): TreeElement | null {
+        let selectedElement: TreeElement | null = null;
+        if (this.sceneStore.projectData !== null && key != null) {
+            selectedElement = this.treeService.searchTreeNode(
+                this.sceneStore.projectData,
+                key
+            );
+        }
+        return selectedElement;
+    }
 }
