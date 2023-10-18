@@ -22,7 +22,7 @@ import Layout from "../classes/Layout";
 import Profile from "../classes/Profile";
 import { defaultProfile, duplicatedLinesOfCode, leakPeriod } from "./Profiles";
 import { PreviewPicture } from "../classes/PreviewPicture";
-import { district, evostreet } from "./Layouts";
+import { district, evostreet, reflexionIslands } from "./Layouts";
 
 const defaultDistrict: PreviewPicture = new PreviewPicture(
     "/static/resources/preview/district_complexity_loc_EXTINT.png",
@@ -33,6 +33,12 @@ const defaultDistrict: PreviewPicture = new PreviewPicture(
 const defaultEvostreet: PreviewPicture = new PreviewPicture(
     "/static/resources/preview/evostreet_complexity_loc_EXTINT.png",
     evostreet,
+    defaultProfile
+);
+
+const defaultReflexionIslands: PreviewPicture = new PreviewPicture(
+    "/static/resources/preview/reflexionIslands_complexity_loc_EXTINT.png",
+    reflexionIslands,
     defaultProfile
 );
 
@@ -67,6 +73,7 @@ const placeholder: PreviewPicture = new PreviewPicture(
 export {
     defaultDistrict,
     defaultEvostreet,
+    defaultReflexionIslands,
     leakDistrict,
     leakEvostreet,
     duplicateDistrict,
@@ -77,6 +84,7 @@ export {
 export const availablePreviewPictures: PreviewPicture[] = [
     defaultDistrict,
     defaultEvostreet,
+    defaultReflexionIslands,
     leakDistrict,
     leakEvostreet,
     duplicateDistrict,
