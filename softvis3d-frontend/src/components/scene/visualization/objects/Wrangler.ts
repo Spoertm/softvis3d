@@ -39,6 +39,7 @@ export class Wrangler {
     private objectsInView: SoftVis3dMesh[] = [];
     private relatedArrowsInView: SoftVis3dArrow[] = [];
     private highlightedHousesInView: SoftVis3dMesh[] = [];
+    private highlightColor: number = 0x9900FF;
     private selectionColor: number = 0xffc519;
     private _enableHouseHighlighting: boolean = false;
 
@@ -80,8 +81,8 @@ export class Wrangler {
             const fromHouse = this.objectsInView.find((obj) => obj.getSoftVis3dId() === arrow.from())!;
             const toHouse = this.objectsInView.find((obj) => obj.getSoftVis3dId() === arrow.to())!;
 
-            fromHouse.color = this.selectionColor;
-            toHouse.color = this.selectionColor;
+            fromHouse.color = this.highlightColor;
+            toHouse.color = this.highlightColor;
 
             this.highlightedHousesInView.push(fromHouse, toHouse);
         }
@@ -142,12 +143,8 @@ export class Wrangler {
             scene.add(...relatedArrows);
             this.objectsInView.push(...relatedArrows);
             this.relatedArrowsInView.push(...relatedArrows);
+            this.enableHouseHighlighting();
         }
-
-        if (this.highlightedHousesInView.length > 0)
-            this.disableHouseHighlighting();
-
-        this.enableHouseHighlighting();
     }
 
     private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
@@ -166,6 +163,7 @@ export class Wrangler {
             }
 
             this.relatedArrowsInView = [];
+            this.disableHouseHighlighting();
         }
     }
 
