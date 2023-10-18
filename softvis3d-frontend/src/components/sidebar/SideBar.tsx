@@ -38,6 +38,24 @@ export default class SideBar extends React.Component<Record<string, unknown>, an
     public render() {
         const selectedElement = this.selectedElementService.getSelectedElement();
         if (selectedElement === null) {
+            if (this.sceneStore.selectedObjectKey?.includes("=>")) {
+                const key = this.sceneStore.selectedObjectKey;
+                const sourceElement = key.split("=>")[0].split("/").pop();
+                const targetElement = key.split("=>")[1].split("/").pop();
+                const c2cArrow = sourceElement?.includes(".") || targetElement?.includes(".");
+
+                const sourceStr = c2cArrow ? "Source class" : "Source module";
+                const targetStr = c2cArrow ? "Target class": "Target module";
+
+                return (
+                    <div id="app-sidebar" className="side-bar">
+                        <h3>{(c2cArrow ? "Class-to-Class dependency": "Module-to-Module dependency")}</h3>
+                        <h4>{sourceStr}: {sourceElement}</h4>
+                        <h4>{targetStr}: {targetElement}</h4>
+                    </div>
+                );
+            }
+
             return <div id="app-sidebar" className="side-bar" />;
         }
 
