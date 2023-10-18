@@ -56,7 +56,7 @@ export class Wrangler {
     }
 
     public updateColorsWithUpdatedShapes(shapes: SoftVis3dShape[], scene: Scene) {
-        const resultObjects: SoftVis3dMesh[] = ObjectFactory.getSceneObjects(shapes);
+        const resultObjects: SoftVis3dMesh[] = ObjectFactory.getSceneObjects(shapes, false);
 
         // update colors
         for (let index = 0; index < resultObjects.length; index++) {
@@ -88,9 +88,9 @@ export class Wrangler {
     }
 
     private disableHouseHighlighting() {
-        const objs = ObjectFactory.getSceneObjects(this.sceneStore.shapes);
-        for (const house of this.highlightedHousesInView) {
-            house.color = objs.find((obj) => obj.getSoftVis3dId() === house.getSoftVis3dId())!.color;
+        const objs = ObjectFactory.getSceneObjects(this.sceneStore.shapes, false);
+        for (let index = 0; index < objs.length; index++) {
+            this.objectsInView[index].color = objs[index].color;
         }
 
         this.highlightedHousesInView = [];
@@ -109,7 +109,6 @@ export class Wrangler {
 
     public selectSceneTreeObject(objectSoftVis3dId: string | null, scene: Scene) {
         // reset former selected objects
-
         for (const previousSelection of this.sceneStore.selectedTreeObjects) {
             previousSelection.object.color = previousSelection.color;
         }

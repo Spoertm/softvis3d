@@ -30,13 +30,15 @@ import { Mapping } from "../../../../services/Architecture/Mapping";
 import { C2cRelation } from "../../../../services/Architecture/C2cRelation";
 
 export class ObjectFactory {
-    public static getSceneObjects(shapes: SoftVis3dShape[]): SoftVis3dMesh[] {
+    public static getSceneObjects(shapes: SoftVis3dShape[], includeArrows: boolean = true): SoftVis3dMesh[] {
         const result: SoftVis3dMesh[] = [];
 
         shapes.forEach((s) => result.push(this._getShape(s)));
 
-        const arrows = this.getDependencyArrows(shapes);
-        result.push(...arrows);
+        if (includeArrows) {
+            const arrows = this.getDependencyArrows(shapes);
+            result.push(...arrows);
+        }
 
         return result;
     }
