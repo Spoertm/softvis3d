@@ -126,14 +126,12 @@ export class Wrangler {
 
         this.removeRelatedArrowsIfNeeded(currentSelection, scene);
 
-        this.sceneStore.selectedTreeObjects = [];
-
         const selectedObjectInformation = {
             object: currentSelection,
             color: currentSelection.color,
         };
 
-        this.sceneStore.selectedTreeObjects.push(selectedObjectInformation);
+        this.sceneStore.selectedTreeObjects = [selectedObjectInformation];
 
         currentSelection.color = this.selectionColor;
 
