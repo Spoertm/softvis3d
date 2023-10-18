@@ -159,8 +159,8 @@ export class Wrangler {
             scene.remove(...this.relatedArrowsInView);
 
             // remove related arrows from objectsInView
-            for (const objToRemove of this.relatedArrowsInView) {
-                const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === objToRemove.getSoftVis3dId());
+            for (const arrowToRemove of this.relatedArrowsInView) {
+                const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === arrowToRemove.getSoftVis3dId());
                 if (index !== -1) {
                     this.objectsInView.splice(index, 1);
                 }
