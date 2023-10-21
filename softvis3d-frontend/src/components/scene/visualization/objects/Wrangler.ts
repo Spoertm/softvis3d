@@ -103,8 +103,11 @@ export class Wrangler {
                 // hide non-violating arrows
                 .filter((obj) => obj instanceof SoftVis3dArrow && !(obj as SoftVis3dArrow).doesViolate)
                 .forEach((obj) => obj.visible = false);
+
+            this.disableHouseHighlighting();
         } else {
             this.objectsInView.forEach((obj) => obj.visible = true);
+            this.enableHouseHighlighting();
         }
     }
 
