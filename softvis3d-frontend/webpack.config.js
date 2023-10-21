@@ -99,13 +99,14 @@ module.exports = function (env, argv) {
             },
 
             devServer: {
-                port: 8080,
+                port: 8000,
                 open: true,
-                contentBase: path.join(__dirname, 'app/'),
+                static: path.join(__dirname, 'app/'),
                 proxy: {
                     '/api': 'http://localhost:9000',
                 },
-                quiet: false
+                stats: 'minimal',
+                allowedHosts: 'all'
             }
         },
 
