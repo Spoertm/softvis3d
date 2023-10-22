@@ -68,12 +68,14 @@ export default class SceneInformation extends React.Component<Record<string, unk
                     }}
                     append={this.renderColorInformation(selectedElement)}
                 />
-                
-                {
-                    this.visualizationOptions.layout.id === "reflexionislands" &&
+
+                {this.visualizationOptions.layout.id === "reflexionislands" && (
+                    <div>
                         <div>
-                        <div>
-                            <input type="checkbox" id="highlightBuildings" name="highlightBuildings" 
+                            <input
+                                type="checkbox"
+                                id="highlightBuildings"
+                                name="highlightBuildings"
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     this.wrangler.highlightHouses = e.target.checked;
                                 }}
@@ -82,7 +84,10 @@ export default class SceneInformation extends React.Component<Record<string, unk
                         </div>
 
                         <div>
-                            <input type="checkbox" id="violationsOnly" name="violationsOnly" 
+                            <input
+                                type="checkbox"
+                                id="violationsOnly"
+                                name="violationsOnly"
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     this.wrangler.showOnlyViolations = e.target.checked;
                                 }}
@@ -90,7 +95,7 @@ export default class SceneInformation extends React.Component<Record<string, unk
                             <label>Show only violations</label>
                         </div>
                     </div>
-                }
+                )}
             </div>
         );
     }

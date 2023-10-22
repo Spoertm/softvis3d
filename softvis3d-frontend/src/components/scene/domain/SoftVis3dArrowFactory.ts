@@ -9,7 +9,7 @@ export class SoftVis3dArrowFactory {
         origin: Vector3,
         target: Vector3,
         relatedDependencies: SoftVis3dArrow[],
-        violations: number = 0,
+        violations = 0,
         color = ArrowColor.blue,
         scale = 1
     ): SoftVis3dArrow {
@@ -29,7 +29,7 @@ export class SoftVis3dArrowFactory {
         key: string,
         origin: Vector3,
         target: Vector3,
-        violations: number = 0,
+        violations = 0,
         scale = 1
     ): SoftVis3dArrow {
         const color = violations > 0 ? ArrowColor.red : ArrowColor.green;
@@ -108,4 +108,4 @@ export class SoftVis3dArrowFactory {
 export enum ArrowType {
     C2C,
     M2M,
-};
+}

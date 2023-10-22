@@ -43,10 +43,7 @@ export default class SelectedElementService {
     public getSelectedElementByKey(key: string): TreeElement | null {
         let selectedElement: TreeElement | null = null;
         if (this.sceneStore.projectData !== null && key != null) {
-            selectedElement = this.treeService.searchTreeNode(
-                this.sceneStore.projectData,
-                key
-            );
+            selectedElement = this.treeService.searchTreeNode(this.sceneStore.projectData, key);
         }
         return selectedElement;
     }

@@ -39,21 +39,25 @@ export default class SideBar extends React.Component<Record<string, unknown>, an
         // If the selected object is a dependency arrow
         if (this.sceneStore.selectedObjectKey?.includes("=>")) {
             const key = this.sceneStore.selectedObjectKey;
-            
+
             const sourceElementKey = key.split(" => ")[0];
-            const sourceNode = this.selectedElementService.getSelectedElementByKey(sourceElementKey)!;
+            const sourceNode =
+                this.selectedElementService.getSelectedElementByKey(sourceElementKey);
 
             const targetElementKey = key.split(" => ")[1];
-            const targetNode = this.selectedElementService.getSelectedElementByKey(targetElementKey)!;
+            const targetNode =
+                this.selectedElementService.getSelectedElementByKey(targetElementKey);
 
             const c2cArrow = sourceElementKey.includes(".") || targetElementKey.includes(".");
 
             const sourceTypeStr = c2cArrow ? "Source class" : "Source module";
-            const targetTypeStr = c2cArrow ? "Target class": "Target module";
+            const targetTypeStr = c2cArrow ? "Target class" : "Target module";
 
             return (
                 <div id="app-sidebar" className="side-bar">
-                    <h3>{(c2cArrow ? "Class-to-Class dependency": "Module-to-Module dependency")}</h3>
+                    <h3>
+                        {c2cArrow ? "Class-to-Class dependency" : "Module-to-Module dependency"}
+                    </h3>
                     <h4>{sourceTypeStr}:</h4>
                     <ActiveFolder activeFolder={sourceNode} />
                     <h4>{targetTypeStr}:</h4>

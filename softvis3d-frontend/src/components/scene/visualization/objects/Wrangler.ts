@@ -40,9 +40,9 @@ export class Wrangler {
     private objectsInView: SoftVis3dMesh[] = [];
     private relatedArrowsInView: SoftVis3dArrow[] = [];
     private highlightedHousesInView: SoftVis3dMesh[] = [];
-    private highlightColor: number = 0x9900FF;
-    private selectionColor: number = 0xffc519;
-    private _enableHouseHighlighting: boolean = false;
+    private highlightColor = 0x9900ff;
+    private selectionColor = 0xffc519;
+    private _enableHouseHighlighting = false;
 
     @lazyInject("SceneStore")
     private readonly sceneStore!: SceneStore;
@@ -105,12 +105,12 @@ export class Wrangler {
         if (flag) {
             this.objectsInView
                 // hide non-violating arrows
-                .filter((obj) => obj instanceof SoftVis3dArrow && !(obj as SoftVis3dArrow).doesViolate)
-                .forEach((obj) => obj.visible = false);
+                .filter((obj) => obj instanceof SoftVis3dArrow && !obj.doesViolate)
+                .forEach((obj) => (obj.visible = false));
 
             this.disableHouseHighlighting();
         } else {
-            this.objectsInView.forEach((obj) => obj.visible = true);
+            this.objectsInView.forEach((obj) => (obj.visible = true));
             this.enableHouseHighlighting();
         }
     }
@@ -121,14 +121,20 @@ export class Wrangler {
             previousSelection.object.color = previousSelection.color;
         }
 
-        if (this.visualizationOptions.layout.id === "reflexionislands" &&  objectSoftVis3dId === null) {
+        if (
+            this.visualizationOptions.layout.id === "reflexionislands" &&
+            objectSoftVis3dId === null
+        ) {
             this.removeRelatedArrowsIfNeeded(null, scene);
             this.disableHouseHighlighting();
             this.sceneStore.selectedTreeObjects = [];
             return;
         }
 
-        const currentSelection = this.objectsInView.find((obj) => obj.getSoftVis3dId() === objectSoftVis3dId);
+        const currentSelection = this.objectsInView.find(
+            (obj) => obj.getSoftVis3dId() === objectSoftVis3dId
+        );
+
         if (!currentSelection) return;
 
         this.removeRelatedArrowsIfNeeded(currentSelection, scene);
@@ -142,11 +148,12 @@ export class Wrangler {
 
         currentSelection.color = this.selectionColor;
 
-        if (this.visualizationOptions.layout.id === "reflexionislands" &&
+        if (
+            this.visualizationOptions.layout.id === "reflexionislands" &&
             currentSelection instanceof SoftVis3dArrow &&
             currentSelection.arrowType === ArrowType.M2M
         ) {
-            const relatedArrows = (currentSelection as SoftVis3dArrow).relatedDependencyArrows;
+            const relatedArrows = currentSelection.relatedDependencyArrows;
 
             scene.add(...relatedArrows);
             this.objectsInView.push(...relatedArrows);
@@ -156,7 +163,9 @@ export class Wrangler {
     }
 
     private removeRelatedArrowsIfNeeded(currentSelection: SoftVis3dMesh | null, scene: Scene) {
-        const currentSelectionIsM2mArrow = currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === ArrowType.M2M;
+        const currentSelectionIsM2mArrow =
+            currentSelection instanceof SoftVis3dArrow &&
+            currentSelection.arrowType === ArrowType.M2M;
 
         // Only remove related (c2c) arrows if the current selection is the void or a m2m arrow
         if (currentSelection === null || currentSelectionIsM2mArrow) {
@@ -164,7 +173,10 @@ export class Wrangler {
 
             // remove related arrows from objectsInView
             for (const arrowToRemove of this.relatedArrowsInView) {
-                const index = this.objectsInView.findIndex(oiv => oiv.getSoftVis3dId() === arrowToRemove.getSoftVis3dId());
+                const index = this.objectsInView.findIndex(
+                    (oiv) => oiv.getSoftVis3dId() === arrowToRemove.getSoftVis3dId()
+                );
+
                 if (index !== -1) {
                     this.objectsInView.splice(index, 1);
                 }

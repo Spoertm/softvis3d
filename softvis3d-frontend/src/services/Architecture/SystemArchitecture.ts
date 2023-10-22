@@ -8,7 +8,13 @@ export class SystemArchitecture {
     public Mappings: Mapping[];
     public Relations: Relation[];
 
-    constructor(fullName: string, metricsFileName: string, modules: string[], mappings: Mapping[], relations: Relation[]) {
+    constructor(
+        fullName: string,
+        metricsFileName: string,
+        modules: string[],
+        mappings: Mapping[],
+        relations: Relation[]
+    ) {
         this.FullName = fullName;
         this.MetricsFileName = metricsFileName;
         this.Modules = modules;

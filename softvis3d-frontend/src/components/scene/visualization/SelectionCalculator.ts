@@ -50,8 +50,7 @@ export class SelectionCalculator {
         if (intersected.length > 0) {
             const object: SoftVis3dMesh = intersected[0].object as SoftVis3dMesh;
 
-            if (!object.visible)
-                return null;
+            if (!object.visible) return null;
 
             result = object.getSoftVis3dId();
         }

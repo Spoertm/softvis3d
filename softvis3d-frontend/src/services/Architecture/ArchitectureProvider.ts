@@ -20,13 +20,13 @@ util
 document
 # mapping
 # <high_level_module> <regular_expression>
-queryParser org\.apache\.lucene\.queryParser\.*
-search org\.apache\.lucene\.search\.*
-index org\.apache\.lucene\.index\.*
-store org\.apache\.lucene\.store\.*
-analysis org\.apache\.lucene\.(analysis|collation)\.*
-util org\.apache\.lucene\.(util|messages)\.*
-document org\.apache\.lucene\.document\.*
+queryParser org.apache.lucene.queryParser.*
+search org.apache.lucene.search.*
+index org.apache.lucene.index.*
+store org.apache.lucene.store.*
+analysis org.apache.lucene.(analysis|collation).*
+util org.apache.lucene.(util|messages).*
+document org.apache.lucene.document.*
 # relations
 # <source_module> <target_module>
 queryParser search
@@ -44,8 +44,7 @@ index util
 analysis document
 analysis util
 document util
-util document`
-            .split("\n");
+util document`.split("\n");
 
         const fullName = luceneSysDl[0];
 
@@ -89,13 +88,14 @@ util document`
         moduleOne: string,
         moduleTwo: string,
         allC2c: C2cRelation[],
-        mapping: Mapping[],
+        mapping: Mapping[]
     ): C2cRelation[] {
-        const c2cDependencies = allC2c.filter((c2c) => {
-            return this.moduleOf(c2c.SourceClass, mapping) === moduleOne && this.moduleOf(c2c.TargetClass, mapping) === moduleTwo;
+        return allC2c.filter((c2c) => {
+            return (
+                this.moduleOf(c2c.SourceClass, mapping) === moduleOne &&
+                this.moduleOf(c2c.TargetClass, mapping) === moduleTwo
+            );
         });
-
-        return c2cDependencies;
     }
 
     public static moduleOf(fileName: string, mapping: Mapping[]): string {
@@ -7903,14 +7903,12 @@ org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.store.IndexOutput,1
 org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.util.packed.PackedInts,0
 org.apache.lucene.util.packed.PackedWriter,org.apache.lucene.util.packed.PackedInts$Writer,0`;
 
-        const c2cRelations = c2cLines
-            .split('\n')
-            .filter(line => !line.includes('instantiated')) // TODO: Fix hack. "instatiated" is a folder that exists in contrib, which is omitted
-            .map(line => {
-                const split = line.split(',');
+        return c2cLines
+            .split("\n")
+            .filter((line) => !line.includes("instantiated")) // TODO: Fix hack. "instatiated" is a folder that exists in contrib, which is omitted
+            .map((line) => {
+                const split = line.split(",");
                 return new C2cRelation(split[0], split[1], parseInt(split[2]));
             });
-
-        return c2cRelations;
     }
 }

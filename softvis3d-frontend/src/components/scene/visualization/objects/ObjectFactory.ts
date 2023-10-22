@@ -30,7 +30,7 @@ import { Mapping } from "../../../../services/Architecture/Mapping";
 import { C2cRelation } from "../../../../services/Architecture/C2cRelation";
 
 export class ObjectFactory {
-    public static getSceneObjects(shapes: SoftVis3dShape[], includeArrows: boolean = true): SoftVis3dMesh[] {
+    public static getSceneObjects(shapes: SoftVis3dShape[], includeArrows = true): SoftVis3dMesh[] {
         const result: SoftVis3dMesh[] = [];
 
         shapes.forEach((s) => result.push(this._getShape(s)));
@@ -49,21 +49,22 @@ export class ObjectFactory {
         const systemArchitecture = ArchitectureProvider.getSystemArchitecture();
         const c2cDependencies = ArchitectureProvider.getC2cDependencies();
 
-        const highLevelRelations = c2cDependencies
-            .map((c2cR) => {
-                const fromModule = ArchitectureProvider.moduleOf(c2cR.SourceClass, systemArchitecture.Mappings);
-                const toModule = ArchitectureProvider.moduleOf(c2cR.TargetClass, systemArchitecture.Mappings);
+        const highLevelRelations = c2cDependencies.map((c2cR) => {
+            const fromModule = ArchitectureProvider.moduleOf(c2cR.SourceClass, systemArchitecture.Mappings);
+            const toModule = ArchitectureProvider.moduleOf(c2cR.TargetClass, systemArchitecture.Mappings);
 
-                return new Relation(fromModule, toModule);
-            });
+            return new Relation(fromModule, toModule);
+        });
 
-        const relationsNoDups = highLevelRelations.filter( // filter out duplicate relations and self-references
+        const relationsNoDups = highLevelRelations.filter(
+            // filter out self-references and duplicate relations
             (relation, index, self) =>
                 index ===
-                self.findIndex((t) =>
-                    t.SourceModule !== t.TargetModule &&
-                    t.SourceModule === relation.SourceModule &&
-                    t.TargetModule === relation.TargetModule
+                self.findIndex(
+                    (t) =>
+                        t.SourceModule !== t.TargetModule &&
+                        t.SourceModule === relation.SourceModule &&
+                        t.TargetModule === relation.TargetModule
                 )
         );
 
@@ -73,7 +74,12 @@ export class ObjectFactory {
             const targetModuleShape = shapes.find((s) => s.key.endsWith(relation.TargetModule));
 
             if (!sourceModuleShape || !targetModuleShape) {
-                console.log("sourceModule or targetModule not found for relation " + relation.SourceModule + " => " + relation.TargetModule);
+                console.log(
+                    "sourceModule or targetModule not found for relation " +
+                    relation.SourceModule +
+                    " => " +
+                    relation.TargetModule
+                );
                 return;
             }
 
@@ -129,15 +135,14 @@ export class ObjectFactory {
             const sourceShape = shapes.find((s) => s.key.includes(sourceFileSlashes));
             const targetShape = shapes.find((s) => s.key.includes(targetFileSlashes));
 
-            if (!sourceShape || !targetShape)
-                return;
+            if (!sourceShape || !targetShape) return;
 
             const key = sourceShape.key + " => " + targetShape.key;
             const arrow = SoftVis3dArrowFactory.createHouseToHouse(
                 key,
                 this.getCentroid(sourceShape, true),
                 this.getCentroid(targetShape),
-                c2cR.Violations,
+                c2cR.Violations
             );
 
             relatedDependencyArrows.push(arrow);
