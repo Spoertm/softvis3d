@@ -27,6 +27,7 @@ import { SoftVis3dShape } from "../../domain/SoftVis3dShape";
 import { ObjectFactory } from "./ObjectFactory";
 import { SoftVis3dArrow } from "../../domain/SoftVis3dArrow";
 import { ArrowType } from "../../domain/SoftVis3dArrowFactory";
+import VisualizationOptionStore from "../../../../stores/VisualizationOptionStore";
 
 /**
  * @class This is a resource manager and loads individual models.
@@ -45,11 +46,14 @@ export class Wrangler {
 
     @lazyInject("SceneStore")
     private readonly sceneStore!: SceneStore;
+    @lazyInject("VisualizationOptionStore")
+    private readonly visualizationOptions!: VisualizationOptionStore;
 
     public loadSoftVis3d(scene: Scene, data: SoftVis3dShape[]) {
         this.removeAllFromScene(scene);
 
-        this.objectsInView = ObjectFactory.getSceneObjects(data);
+        const includeArrows = this.visualizationOptions.layout.id === "reflexionislands";
+        this.objectsInView = ObjectFactory.getSceneObjects(data, includeArrows);
 
         for (const object of this.objectsInView) {
             scene.add(object);
@@ -117,7 +121,7 @@ export class Wrangler {
             previousSelection.object.color = previousSelection.color;
         }
 
-        if (objectSoftVis3dId === null) {
+        if (this.visualizationOptions.layout.id === "reflexionislands" &&  objectSoftVis3dId === null) {
             this.removeRelatedArrowsIfNeeded(null, scene);
             this.disableHouseHighlighting();
             this.sceneStore.selectedTreeObjects = [];
@@ -138,7 +142,10 @@ export class Wrangler {
 
         currentSelection.color = this.selectionColor;
 
-        if (currentSelection instanceof SoftVis3dArrow && currentSelection.arrowType === ArrowType.M2M) {
+        if (this.visualizationOptions.layout.id === "reflexionislands" &&
+            currentSelection instanceof SoftVis3dArrow &&
+            currentSelection.arrowType === ArrowType.M2M
+        ) {
             const relatedArrows = (currentSelection as SoftVis3dArrow).relatedDependencyArrows;
 
             scene.add(...relatedArrows);
