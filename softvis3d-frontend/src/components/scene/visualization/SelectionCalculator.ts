@@ -42,15 +42,13 @@ export class SelectionCalculator {
         const cameraPosition = camera.position;
         SelectionCalculator.RAYCASTER.set(cameraPosition, vector.sub(cameraPosition).normalize());
         const intersected: Intersection[] = SelectionCalculator.RAYCASTER.intersectObjects(
-            objectsInView,
+            objectsInView.filter((o) => o.visible),
             true
         );
 
         let result: string | null = null;
         if (intersected.length > 0) {
             const object: SoftVis3dMesh = intersected[0].object as SoftVis3dMesh;
-
-            if (!object.visible) return null;
 
             result = object.getSoftVis3dId();
         }
