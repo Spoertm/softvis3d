@@ -105,7 +105,13 @@ module.exports = function (env, argv) {
                 proxy: {
                     '/api': 'http://localhost:9000',
                 },
-                allowedHosts: 'all'
+                allowedHosts: 'all',
+                client: {
+                    overlay: {
+                        warnings: false,
+                        errors: false
+                    }
+                }
             }
         },
 
